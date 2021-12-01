@@ -38,41 +38,49 @@ void sort(pcb a[], int l)
 pcb finalOrder[10];
 int f = 0;
 
-void execute(pcb el)
+void execute(pcb el, int n)
 {
-  el.isDone = 1;
-  finalOrder[f] = el;
-  f++;
+  for (int i = 0; i < n; i++)
+  {
+    if (p[i].id == el.id)
+    {
+      p[i].isDone = 1;
+      finalOrder[f] = el;
+      f++;
+    }
+  }
+  printf("Executing id = %d\n", el.id);
 }
 
 void sjf(pcb p[], int n)
 {
   int currTime = 0;
   int index = 0;
-  pcb minBurstProcess;
 
   for (int i = 0; i < n; i++)
   {
     index = 0;
-    minBurstProcess = p[index];
-    while (p[index].arrivalTime < currTime)
+    pcb minBurstProcess;
+    minBurstProcess.burstTime = INT_MAX;
+    while (index < n)
     {
-      if (p[index].isDone == 0 && p[index].burstTime < minBurstProcess.burstTime)
+      if (p[index].isDone == 0 && p[index].arrivalTime <= currTime && p[index].burstTime < minBurstProcess.burstTime)
       {
+        printf("\nHere with pid %d; isDone = %d ", p[index].id, p[index].isDone);
         minBurstProcess = p[index];
       }
       index++;
     }
-    execute(minBurstProcess);
+    execute(minBurstProcess, n);
     currTime += minBurstProcess.burstTime;
   }
 }
 
 void display(pcb a[], int l)
 {
-  printf("\nProces Id | Arrival Time | Burst Time | Completion Time | TurnAroundTime | WaitingTime");
+  printf("\nProces Id | Arrival Time | Burst Time | isDone | TurnAroundTime | WaitingTime");
   for (int i = 0; i < l; i++)
-    printf("\n%d\t\t%d\t\t%d\t\t%d\t\t%d\t\t%d", p[i].id, p[i].arrivalTime, p[i].burstTime, p[i].completionTime, p[i].turnAroundTime, p[i].waitingTime);
+    printf("\n%d\t\t%d\t\t%d\t\t%d\t\t%d\t\t%d", a[i].id, a[i].arrivalTime, a[i].burstTime, a[i].isDone, a[i].turnAroundTime, a[i].waitingTime);
 }
 
 void getData(int n)
@@ -103,5 +111,6 @@ int main()
 
   printf("\n\nAfter applying SJF algorithm:");
   display(finalOrder, f);
+  printf("f = %d", f);
   printf("\n");
 }
