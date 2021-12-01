@@ -9,10 +9,11 @@ typedef struct
   int completionTime;
   int turnAroundTime;
   int waitingTime;
-  int isDone;
+  int isDone; // flag to mark a process once it has been executed
 } pcb;
 
-pcb p[10];
+pcb p[10]; // array of processes.
+
 void swap(pcb *a, pcb *b)
 {
   pcb temp;
@@ -24,7 +25,6 @@ void swap(pcb *a, pcb *b)
 void sort(pcb a[], int l)
 {
   for (int i = 0; i < l; i++)
-  {
     for (int j = 0; j < l - i - 1; j++)
     {
       if (a[j].arrivalTime > a[j + 1].arrivalTime)
@@ -32,24 +32,17 @@ void sort(pcb a[], int l)
         swap(&a[j], &a[j + 1]);
       }
     }
-  }
 }
 
 pcb finalOrder[10];
 int f = 0;
 
-void execute(pcb el, int n)
+void execute(int processIndex, int n)
 {
-  for (int i = 0; i < n; i++)
-  {
-    if (p[i].id == el.id)
-    {
-      p[i].isDone = 1;
-      finalOrder[f] = el;
-      f++;
-    }
-  }
-  printf("Executing id = %d\n", el.id);
+  p[processIndex].isDone = 1;
+  finalOrder[f] = p[processIndex];
+  f++;
+  printf("\nExecuting Process %d", p[processIndex].id);
 }
 
 void sjf(pcb p[], int n)
@@ -57,30 +50,50 @@ void sjf(pcb p[], int n)
   int currTime = 0;
   int index = 0;
 
+  // loop to ensure that all the processes gets executed
   for (int i = 0; i < n; i++)
   {
     index = 0;
-    pcb minBurstProcess;
-    minBurstProcess.burstTime = INT_MAX;
+    int minBurstTime = INT_MAX; // assume Infinite burst time
+    int minBurstTimeProcessIndex;
+
+    // loop to find the process of minimum burst time among the process having arrival time less than currentTime
     while (index < n)
     {
-      if (p[index].isDone == 0 && p[index].arrivalTime <= currTime && p[index].burstTime < minBurstProcess.burstTime)
+      // ignore all the processes which are marked as done
+      if (p[index].isDone == 0 && p[index].arrivalTime <= currTime && p[index].burstTime < minBurstTime)
       {
-        printf("\nHere with pid %d; isDone = %d ", p[index].id, p[index].isDone);
-        minBurstProcess = p[index];
+        // printf("\nHere with pid %d; isDone = %d ", p[index].id, p[index].isDone);
+        minBurstTimeProcessIndex = index;
       }
       index++;
     }
-    execute(minBurstProcess, n);
-    currTime += minBurstProcess.burstTime;
+    // execute the process with minimum burst time and mark it as done
+    execute(minBurstTimeProcessIndex, n);
+    // cpu will take the (burst time of the process) seconds from the current time to execute the process.
+    currTime += p[minBurstTimeProcessIndex].burstTime;
+  }
+}
+
+void calculateValues(pcb a[], int l)
+{
+  a[0].completionTime = a[0].arrivalTime + a[0].burstTime;
+  for (int i = 0; i < l; i++)
+  {
+    a[i].completionTime = a[i - 1].completionTime + a[i].burstTime;
+    int diff = a[-1].completionTime - a[i].arrivalTime;
+    if (diff > 0)
+      a[i].completionTime += diff;
+    a[i].turnAroundTime = a[i].completionTime - a[i].arrivalTime;
+    a[i].waitingTime = a[i].turnAroundTime - a[i].burstTime;
   }
 }
 
 void display(pcb a[], int l)
 {
-  printf("\nProces Id | Arrival Time | Burst Time | isDone | TurnAroundTime | WaitingTime");
+  printf("\nProces Id | Arrival Time | Burst Time | Completion Time | TurnAroundTime | WaitingTime");
   for (int i = 0; i < l; i++)
-    printf("\n%d\t\t%d\t\t%d\t\t%d\t\t%d\t\t%d", a[i].id, a[i].arrivalTime, a[i].burstTime, a[i].isDone, a[i].turnAroundTime, a[i].waitingTime);
+    printf("\n%d\t\t%d\t\t%d\t\t%d\t\t%d\t\t%d", a[i].id, a[i].arrivalTime, a[i].burstTime, a[i].completionTime, a[i].turnAroundTime, a[i].waitingTime);
 }
 
 void getData(int n)
@@ -108,9 +121,9 @@ int main()
   display(p, n);
   sort(p, n);
   sjf(p, n);
+  calculateValues(finalOrder, f);
 
   printf("\n\nAfter applying SJF algorithm:");
   display(finalOrder, f);
-  printf("f = %d", f);
   printf("\n");
 }
