@@ -34,15 +34,15 @@ void sort(pcb a[], int l)
     }
 }
 
-pcb finalOrder[10];
-int f = 0;
+pcb finalOrder[10]; // array to store the processes in correct order
+int f = 0;          // index of the final array
 
 void execute(int processIndex, int n)
 {
   p[processIndex].isDone = 1;
   finalOrder[f] = p[processIndex];
   f++;
-  printf("\nExecuting Process %d", p[processIndex].id);
+  printf("\nExecuting Process %d for %d seconds", p[processIndex].id, p[processIndex].burstTime);
 }
 
 void sjf(pcb p[], int n)
@@ -53,20 +53,17 @@ void sjf(pcb p[], int n)
   // loop to ensure that all the processes gets executed
   for (int i = 0; i < n; i++)
   {
-    index = 0;
     int minBurstTime = INT_MAX; // assume Infinite burst time
     int minBurstTimeProcessIndex;
 
     // loop to find the process of minimum burst time among the process having arrival time less than currentTime
-    while (index < n)
+    for (int index = 0; index < n; index++)
     {
       // ignore all the processes which are marked as done
       if (p[index].isDone == 0 && p[index].arrivalTime <= currTime && p[index].burstTime < minBurstTime)
       {
-        // printf("\nHere with pid %d; isDone = %d ", p[index].id, p[index].isDone);
         minBurstTimeProcessIndex = index;
       }
-      index++;
     }
     // execute the process with minimum burst time and mark it as done
     execute(minBurstTimeProcessIndex, n);
@@ -81,9 +78,10 @@ void calculateValues(pcb a[], int l)
   for (int i = 0; i < l; i++)
   {
     a[i].completionTime = a[i - 1].completionTime + a[i].burstTime;
-    int diff = a[-1].completionTime - a[i].arrivalTime;
+    int diff = a[i - 1].completionTime - a[i].arrivalTime;
     if (diff > 0)
       a[i].completionTime += diff;
+
     a[i].turnAroundTime = a[i].completionTime - a[i].arrivalTime;
     a[i].waitingTime = a[i].turnAroundTime - a[i].burstTime;
   }
@@ -111,13 +109,13 @@ void getData(int n)
 
 int main()
 {
-
   int n;
+  printf("----SJF CPU SCHEDULING ALGORITHM----\n");
   printf("Enter the number of processes: ");
   scanf("%d", &n);
   getData(n);
 
-  printf("Input order");
+  printf("\nInput order:");
   display(p, n);
   sort(p, n);
   sjf(p, n);
