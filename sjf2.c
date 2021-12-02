@@ -1,3 +1,4 @@
+// Program to input an array of processes with their arrival times & burst times, and schedule them using to Shortest Job First CPU Scheduling
 #include <stdio.h>
 #include <limits.h>
 
@@ -41,8 +42,8 @@ void execute(int processIndex, int n)
 {
   p[processIndex].isDone = 1;
   finalOrder[f] = p[processIndex];
-  f++;
   printf("\nExecuting Process %d for %d seconds", p[processIndex].id, p[processIndex].burstTime);
+  f++;
 }
 
 void sjf(pcb p[], int n)
@@ -63,6 +64,7 @@ void sjf(pcb p[], int n)
       if (p[index].isDone == 0 && p[index].arrivalTime <= currTime && p[index].burstTime < minBurstTime)
       {
         minBurstTimeProcessIndex = index;
+        minBurstTime = p[minBurstTimeProcessIndex].burstTime;
       }
     }
     // execute the process with minimum burst time and mark it as done
@@ -78,9 +80,10 @@ void calculateValues(pcb a[], int l)
   for (int i = 0; i < l; i++)
   {
     a[i].completionTime = a[i - 1].completionTime + a[i].burstTime;
-    int diff = a[i - 1].completionTime - a[i].arrivalTime;
-    if (diff > 0)
-      a[i].completionTime += diff;
+
+    // int diff = a[i - 1].completionTime - a[i].arrivalTime;
+    // if (diff > 0)
+    //   a[i].completionTime += diff;
 
     a[i].turnAroundTime = a[i].completionTime - a[i].arrivalTime;
     a[i].waitingTime = a[i].turnAroundTime - a[i].burstTime;
@@ -98,9 +101,9 @@ void getData(int n)
 {
   for (int i = 0; i < n; i++)
   {
-    printf("\nEnter arrival time of process %d: ", i);
+    printf("\nEnter arrival time of process %d: ", i + 1);
     scanf("%d", &p[i].arrivalTime);
-    printf("Enter burst time of process %d: ", i);
+    printf("Enter burst time of process %d: ", i + 1);
     scanf("%d", &p[i].burstTime);
     p[i].id = i + 1;
     p[i].isDone = 0;
@@ -117,7 +120,7 @@ int main()
 
   printf("\nInput order:");
   display(p, n);
-  sort(p, n);
+  sort(p, n); // when 2 processes may have same burst times, the one with the earliest arrival time will be selected
   sjf(p, n);
   calculateValues(finalOrder, f);
 
