@@ -81,9 +81,9 @@ void calculateValues(pcb a[], int l)
   {
     a[i].completionTime = a[i - 1].completionTime + a[i].burstTime;
 
-    // int diff = a[i - 1].completionTime - a[i].arrivalTime;
-    // if (diff > 0)
-    //   a[i].completionTime += diff;
+    int diff = a[i].arrivalTime - a[i - 1].completionTime;
+    if (diff > 0)
+      a[i].completionTime += diff;
 
     a[i].turnAroundTime = a[i].completionTime - a[i].arrivalTime;
     a[i].waitingTime = a[i].turnAroundTime - a[i].burstTime;
