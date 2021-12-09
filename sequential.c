@@ -5,8 +5,6 @@
 typedef struct
 {
   char name;
-  int startingAddress;
-  int length;
   int isAllocated;
 } pcb;
 
