@@ -1,0 +1,1 @@
+//  Program to simulate the sequential file allocation strategy
