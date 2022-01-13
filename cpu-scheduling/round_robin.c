@@ -165,15 +165,15 @@ void getData(int n)
 
 void printAverages()
 {
-  int avgWaitingTime = 0;
-  int avgTurnAroundTime = 0;
+  float avgWaitingTime = 0;
+  float avgTurnAroundTime = 0;
   for (int i = 0; i < n; i++)
   {
     avgWaitingTime += finalOrder[i].waitingTime;
     avgTurnAroundTime += finalOrder[i].turnAroundTime;
   }
-  printf("\nAverage Waiting Time = %d", avgWaitingTime / n);
-  printf("\nAverage Turn Around Time = %d", avgTurnAroundTime / n);
+  printf("\nAverage Waiting Time = %f", avgWaitingTime / n);
+  printf("\nAverage Turn Around Time = %f", avgTurnAroundTime / n);
 }
 
 int main()
@@ -186,7 +186,6 @@ int main()
   getData(n);
 
   printf("\nInput order:");
-
   display(input, n);
   printf("\nAfter sorting:");
   sort(input, n);

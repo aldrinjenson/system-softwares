@@ -97,6 +97,19 @@ void display(pcb a[], int l)
     printf("\n%d\t\t%d\t\t%d\t\t%d\t\t%d\t\t%d", a[i].id, a[i].arrivalTime, a[i].burstTime, a[i].completionTime, a[i].turnAroundTime, a[i].waitingTime);
 }
 
+void printAverages(pcb a[], int l)
+{
+  float avgWaitingTime = 0;
+  float avgTurnAroundTime = 0;
+  for (int i = 0; i < l; i++)
+  {
+    avgWaitingTime += a[i].waitingTime;
+    avgTurnAroundTime += a[i].turnAroundTime;
+  }
+  printf("\nAverage Waiting Time = %f", avgWaitingTime / l);
+  printf("\nAverage Turn Around Time = %f", avgTurnAroundTime / l);
+}
+
 void getData(int n)
 {
   for (int i = 0; i < n; i++)
@@ -126,5 +139,6 @@ int main()
 
   printf("\n\nAfter applying SJF algorithm:");
   display(finalOrder, f);
+  printAverages(finalOrder, f);
   printf("\n");
 }
