@@ -15,6 +15,8 @@ typedef struct
 } pcb;
 
 pcb p[10]; // array of processes.
+float avgWaitingTime = 0;
+float avgTurnAroundTime = 0;
 
 void swap(pcb *a, pcb *b)
 {
@@ -88,6 +90,9 @@ void calculateValues(pcb a[], int l)
 
     a[i].turnAroundTime = a[i].completionTime - a[i].arrivalTime;
     a[i].waitingTime = a[i].turnAroundTime - a[i].burstTime;
+
+    avgWaitingTime += a[i].waitingTime;
+    avgTurnAroundTime += a[i].turnAroundTime;
   }
 }
 
@@ -129,5 +134,7 @@ int main()
 
   printf("\n\nAfter applying SJF algorithm:");
   display(finalOrder, f);
+  printf("\nAverage Waiting Time = %f", avgWaitingTime / f);
+  printf("\nAverage Turn Around Time = %f", avgTurnAroundTime / f);
   printf("\n");
 }
