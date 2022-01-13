@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <limits.h>
 #include <stdlib.h>
-#define MAX_LENGTH 10
+#define MAX_LENGTH 15
 
 typedef struct
 {
@@ -15,8 +15,14 @@ typedef struct
   int remainingTime;
 } pcb;
 
-pcb queue[MAX_LENGTH]; // circular queue of processes
-int front = -1, rear = -1;
+pcb input[MAX_LENGTH];      // array of input processes (not a queue)
+pcb queue[MAX_LENGTH];      // queue of processes
+pcb finalOrder[MAX_LENGTH]; // array to store the processes in correct order
+
+int f = 0;                 // index of the final array
+int front = -1, rear = -1; // for the queue of processes
+int count = 1, n, timeQuantum;
+int currTime = 0;
 
 int isFull()
 {
@@ -43,6 +49,7 @@ void enQueue(pcb el)
   else
     rear = (rear + 1) % MAX_LENGTH;
   queue[rear] = el;
+  printf("\nAdded process p%d to queue.", el.id);
 }
 
 pcb deQueue()
@@ -52,6 +59,7 @@ pcb deQueue()
     printf("Queue empty. Aborting..");
     exit(0);
   }
+
   pcb el = queue[front];
   if (front == rear)
   {
@@ -78,15 +86,20 @@ void sort(pcb a[], int l)
     }
 }
 
-pcb finalOrder[MAX_LENGTH]; // array to store the processes in correct order
-int f = 0;                  // index of the final array
-int currTime = 0;
-
-void execute(pcb el, int timeQuantum)
+void display(pcb a[], int l)
 {
-  if (el.remainingTime < timeQuantum)
+  printf("\nProces Id | Arrival Time | Burst Time | Completion Time | TurnAroundTime | WaitingTime");
+  for (int i = 0; i < l; i++)
+    printf("\np%d\t\t%d\t\t%d\t\t%d\t\t%d\t\t%d", a[i].id, a[i].arrivalTime, a[i].burstTime, a[i].completionTime, a[i].turnAroundTime, a[i].waitingTime);
+}
+
+void executeTopProcess()
+{
+  pcb el = deQueue(); // pop the top most process from the queue
+  printf("\nExecuting process p%d for %d seconds; ", el.id, el.remainingTime);
+
+  if (el.remainingTime <= timeQuantum)
   {
-    printf("\nExecuting Process %d for %d seconds; ", el.id, el.remainingTime);
     currTime += el.remainingTime;
     el.remainingTime = 0;
     el.completionTime = currTime;
@@ -97,27 +110,39 @@ void execute(pcb el, int timeQuantum)
   }
   else
   {
+    int flag = 0;
     currTime += timeQuantum;
     el.remainingTime -= timeQuantum;
-    enQueue(el); // execute the process and add it back in the queue
-    printf("\nExecuting Process %d for %d seconds; %d seconds remaining", el.id, timeQuantum, el.remainingTime);
+    printf("%d seconds remaining; CT = %d; count = %d", el.id, timeQuantum, el.remainingTime, currTime, count);
+    for (; count < n; count++)
+    {
+      if (input[count].arrivalTime <= currTime)
+      {
+        // add all process to queue from input array which have arrived while this process is being executed
+        enQueue(input[count]);
+        flag = 1;
+      }
+      else
+        break;
+    }
+    enQueue(el); // add the current process to the end
   }
 }
 
 void roundRobin(int timeQuantum)
 {
-  while (!isEmpty())
+  enQueue(input[0]); // add the first process to queue
+  currTime = input[0].arrivalTime;
+  while (f < n)
   {
-    pcb el = deQueue();
-    execute(el, timeQuantum);
+    if (isEmpty())
+    {
+      currTime++;
+      printf("Queue empty, incrementing currTime by 1");
+      continue;
+    }
+    executeTopProcess();
   }
-}
-
-void display(pcb a[], int l)
-{
-  printf("\nProces Id | Arrival Time | Burst Time | Completion Time | TurnAroundTime | WaitingTime");
-  for (int i = 0; i < l; i++)
-    printf("\n%d\t\t%d\t\t%d\t\t%d\t\t%d\t\t%d", a[i].id, a[i].arrivalTime, a[i].burstTime, a[i].completionTime, a[i].turnAroundTime, a[i].waitingTime);
 }
 
 void getData(int n)
@@ -131,26 +156,45 @@ void getData(int n)
     scanf("%d", &el.burstTime);
     el.id = i + 1;
     el.remainingTime = el.burstTime;
-    enQueue(el);
+    el.waitingTime = 0;
+    el.completionTime = 0;
+    el.turnAroundTime = 0;
+    input[i] = el;
   }
+}
+
+void printAverages()
+{
+  int avgWaitingTime = 0;
+  int avgTurnAroundTime = 0;
+  for (int i = 0; i < n; i++)
+  {
+    avgWaitingTime += finalOrder[i].waitingTime;
+    avgTurnAroundTime += finalOrder[i].turnAroundTime;
+  }
+  printf("\nAverage Waiting Time = %d", avgWaitingTime / n);
+  printf("\nAverage Turn Around Time = %d", avgTurnAroundTime / n);
 }
 
 int main()
 {
-  int n, q;
   printf("----Round Robin CPU SCHEDULING ALGORITHM----\n");
   printf("Enter the number of processes: ");
   scanf("%d", &n);
   printf("Enter Time Quantum: ");
-  scanf("%d", &q);
+  scanf("%d", &timeQuantum);
   getData(n);
 
   printf("\nInput order:");
-  display(queue, n);
-  sort(queue, n);
-  roundRobin(q);
+
+  display(input, n);
+  printf("\nAfter sorting:");
+  sort(input, n);
+  display(input, n);
+  roundRobin(timeQuantum);
 
   printf("\n\nAfter applying SJF algorithm, the processes in the order of completion:");
   display(finalOrder, f);
+  printAverages();
   printf("\n");
 }
