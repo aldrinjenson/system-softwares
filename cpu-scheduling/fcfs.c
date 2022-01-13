@@ -10,11 +10,12 @@ typedef struct
   int completionTime;
   int turnAroundTime;
   int waitingTime;
-  int priority;
   int isDone; // flag to mark a process once it has been executed
 } pcb;
 
 pcb p[10]; // array of processes.
+float avgWaitingTime = 0;
+float avgTurnAroundTime = 0;
 
 void swap(pcb *a, pcb *b)
 {
@@ -47,7 +48,7 @@ void execute(int processIndex, int n)
   f++;
 }
 
-void sjf(pcb p[], int n)
+void fcfs(pcb p[], int n)
 {
   int currTime = 0;
   int index = 0;
@@ -55,23 +56,10 @@ void sjf(pcb p[], int n)
   // loop to ensure that all the processes gets executed
   for (int i = 0; i < n; i++)
   {
-    int minPriority = INT_MAX; // assume Infinite priority
-    int minPriorityProcessIndex;
-
-    // loop to find the process of minimum burst time among the process having arrival time less than currentTime
-    for (int index = 0; index < n; index++)
-    {
-      // ignore all the processes which are marked as done
-      if (p[index].isDone == 0 && p[index].arrivalTime <= currTime && p[index].priority < minPriority)
-      {
-        minPriorityProcessIndex = index;
-        minPriority = p[minPriorityProcessIndex].priority;
-      }
-    }
     // execute the process with minimum burst time and mark it as done
-    execute(minPriorityProcessIndex, n);
+    execute(i, n);
     // cpu will take the (burst time of the process) seconds from the current time to execute the process.
-    currTime += p[minPriorityProcessIndex].burstTime;
+    currTime += p[i].burstTime;
   }
 }
 
@@ -88,6 +76,9 @@ void calculateValues(pcb a[], int l)
 
     a[i].turnAroundTime = a[i].completionTime - a[i].arrivalTime;
     a[i].waitingTime = a[i].turnAroundTime - a[i].burstTime;
+
+    avgWaitingTime += a[i].waitingTime;
+    avgTurnAroundTime += a[i].turnAroundTime;
   }
 }
 
@@ -106,8 +97,6 @@ void getData(int n)
     scanf("%d", &p[i].arrivalTime);
     printf("Enter burst time of process %d: ", i + 1);
     scanf("%d", &p[i].burstTime);
-    printf("Enter priority of process %d: ", i + 1);
-    scanf("%d", &p[i].priority);
     p[i].id = i + 1;
     p[i].isDone = 0;
   }
@@ -116,7 +105,7 @@ void getData(int n)
 int main()
 {
   int n;
-  printf("----SJF CPU SCHEDULING ALGORITHM----\n");
+  printf("----FCFS CPU SCHEDULING ALGORITHM----\n");
   printf("Enter the number of processes: ");
   scanf("%d", &n);
   getData(n);
@@ -124,10 +113,13 @@ int main()
   printf("\nInput order:");
   display(p, n);
   sort(p, n); // when 2 processes may have same burst times, the one with the earliest arrival time will be selected
-  sjf(p, n);
+  fcfs(p, n);
   calculateValues(finalOrder, f);
 
-  printf("\n\nAfter applying SJF algorithm:");
+  printf("\n\nAfter applying FCFS algorithm:");
   display(finalOrder, f);
+
+  printf("\nAverage Waiting Time = %f", avgWaitingTime / f);
+  printf("\nAverage Turn Around Time = %f", avgTurnAroundTime / f);
   printf("\n");
 }
