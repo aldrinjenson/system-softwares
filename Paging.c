@@ -57,7 +57,7 @@ void main()
     int offset = logicalAddress % pageSize;
     if (pageNum > numPages)
     {
-      printf("Logic address out of bounds for the current program.\nMax logic address available for the entered process is %d\nPlease try again...\n", pageTable[numPages - 1] * pageSize + offset);
+      printf("Logic address out of bounds for the current program.\nPlease try again...\n");
       continue;
     }
     printf("Page Number = %d; Offset = %d\n", pageNum, offset);

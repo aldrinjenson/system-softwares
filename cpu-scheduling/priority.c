@@ -132,7 +132,7 @@ int main()
   prioritySchedule(p, n);
   calculateValues(finalOrder, f);
 
-  printf("\n\nAfter applying SJF algorithm:");
+  printf("\n\nAfter applying Priority Scheduling algorithm:");
   display(finalOrder, f);
   printf("\nAverage Waiting Time = %f", avgWaitingTime / f);
   printf("\nAverage Turn Around Time = %f", avgTurnAroundTime / f);
