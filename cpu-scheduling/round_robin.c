@@ -113,7 +113,7 @@ void executeTopProcess()
     int flag = 0;
     currTime += timeQuantum;
     el.remainingTime -= timeQuantum;
-    printf("%d seconds remaining; CT = %d; count = %d", el.id, timeQuantum, el.remainingTime, currTime, count);
+    // printf("%d seconds remaining; CT = %d; count = %d", el.id, timeQuantum, el.remainingTime, currTime, count);
     for (; count < n; count++)
     {
       if (input[count].arrivalTime <= currTime)
