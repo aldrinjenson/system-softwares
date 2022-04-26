@@ -1,6 +1,6 @@
 // Program to input an array of processes with their arrival times & burst times, and schedule them using to Shortest Job First CPU Scheduling
 #include <stdio.h>
-#include <limits.h>
+// #include <limits.h>
 
 typedef struct
 {
@@ -27,13 +27,12 @@ void swap(pcb *a, pcb *b)
 
 void sort(pcb a[], int l)
 {
+  // bubble sort
   for (int i = 0; i < l; i++)
     for (int j = 0; j < l - i - 1; j++)
     {
       if (a[j].arrivalTime > a[j + 1].arrivalTime)
-      {
         swap(&a[j], &a[j + 1]);
-      }
     }
 }
 
@@ -56,9 +55,8 @@ void fcfs(pcb p[], int n)
   // loop to ensure that all the processes gets executed
   for (int i = 0; i < n; i++)
   {
-    // execute the process with minimum burst time and mark it as done
     execute(i, n);
-    // cpu will take the (burst time of the process) seconds from the current time to execute the process.
+    // cpu will take (burst time of the process) seconds from the current time to execute the process.
     currTime += p[i].burstTime;
   }
 }
@@ -66,7 +64,7 @@ void fcfs(pcb p[], int n)
 void calculateValues(pcb a[], int l)
 {
   a[0].completionTime = a[0].arrivalTime + a[0].burstTime;
-  for (int i = 0; i < l; i++)
+  for (int i = 1; i < l; i++)
   {
     a[i].completionTime = a[i - 1].completionTime + a[i].burstTime;
 
@@ -112,7 +110,7 @@ int main()
 
   printf("\nInput order:");
   display(p, n);
-  sort(p, n); // when 2 processes may have same burst times, the one with the earliest arrival time will be selected
+  sort(p, n); // based on arrival times
   fcfs(p, n);
   calculateValues(finalOrder, f);
 
