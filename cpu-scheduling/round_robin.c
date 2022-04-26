@@ -96,7 +96,7 @@ void display(pcb a[], int l)
 void executeTopProcess()
 {
   pcb el = deQueue(); // pop the top most process from the queue
-  printf("\nExecuting process p%d for %d seconds; ", el.id, el.remainingTime);
+  printf("\nExecuting process p%d  ", el.id);
 
   if (el.remainingTime <= timeQuantum)
   {
@@ -110,17 +110,16 @@ void executeTopProcess()
   }
   else
   {
-    int flag = 0;
     currTime += timeQuantum;
     el.remainingTime -= timeQuantum;
-    // printf("%d seconds remaining; CT = %d; count = %d", el.id, timeQuantum, el.remainingTime, currTime, count);
+    printf("%d seconds remaining; current Time = %d; count = %d", el.remainingTime, currTime, count);
+
     for (; count < n; count++)
     {
       if (input[count].arrivalTime <= currTime)
       {
         // add all process to queue from input array which have arrived while this process is being executed
         enQueue(input[count]);
-        flag = 1;
       }
       else
         break;
@@ -135,12 +134,6 @@ void roundRobin(int timeQuantum)
   currTime = input[0].arrivalTime;
   while (f < n)
   {
-    if (isEmpty())
-    {
-      currTime++;
-      printf("Queue empty, incrementing currTime by 1");
-      continue;
-    }
     executeTopProcess();
   }
 }
@@ -192,7 +185,7 @@ int main()
   display(input, n);
   roundRobin(timeQuantum);
 
-  printf("\n\nAfter applying SJF algorithm, the processes in the order of completion:");
+  printf("\n\nAfter applying Round Robin algorithm, the processes in the order of completion:");
   display(finalOrder, f);
   printAverages();
   printf("\n");
