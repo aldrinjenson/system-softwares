@@ -57,7 +57,7 @@ int main()
         minBurstTime = ps[i].burstTime;
         minBurstTimeProcessIndex = i;
       }
-      else if (ps[i].burstTime == minBurstTime)
+      else if (ps[i].burstTime == minBurstTime && ps[i].arrivalTime < ps[minBurstTimeProcessIndex].arrivalTime)
       {
         minBurstTime = ps[i].burstTime;
         minBurstTimeProcessIndex = i;
