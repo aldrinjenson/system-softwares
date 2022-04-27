@@ -2,12 +2,49 @@
 #include <stdlib.h>
 #include <string.h>
 
+void display()
+{
+
+	char str;
+	FILE *input, *intermediate, *symTbl;
+
+	printf("\nThe contents of Input Table :\n\n");
+	input = fopen("input.txt", "r");
+	str = fgetc(input);
+	while (str != EOF)
+	{
+		printf("%c", str);
+		str = fgetc(input);
+	}
+	fclose(input);
+
+	printf("\n\nThe contents of Intermediate Table :\n\n");
+	intermediate = fopen("intermediate.txt", "r");
+	str = fgetc(intermediate);
+	while (str != EOF)
+	{
+		printf("%c", str);
+		str = fgetc(intermediate);
+	}
+	fclose(intermediate);
+
+	printf("\n\nThe contents of Symbol Table :\n\n");
+	symTbl = fopen("symtab.txt", "r");
+	str = fgetc(symTbl);
+	while (str != EOF)
+	{
+		printf("%c", str);
+		str = fgetc(symTbl);
+	}
+	fclose(symTbl);
+}
+
 void main()
 {
 	FILE *input = fopen("input.txt", "r");
 	FILE *opTable = fopen("optab.txt", "r");
-	FILE *output = fopen("out.txt", "w");
-	FILE *symTbl = fopen("symtbl.txt", "w");
+	FILE *output = fopen("intermediate.txt", "w");
+	FILE *symTbl = fopen("symtab.txt", "w");
 
 	char label[10], opcode[10], operand[10], code[10], mnemonic[10];
 
@@ -25,7 +62,9 @@ void main()
 		locctr = 0;
 	while (strcmp(opcode, "END") != 0)
 	{
-		fprintf(output, "%d\t", locctr);
+		// fprintf(output, "%d\t", locctr);
+
+		fprintf(output, "%d\t%s\t%s\t%s\n", locctr, label, opcode, operand);
 		if (strcmp(label, "**") != 0)
 		{
 			// add to symTable if it's defining a symbol
@@ -51,9 +90,9 @@ void main()
 		else if (strcmp(opcode, "RESB") == 0)
 			locctr += (atoi(operand));
 		else if (strcmp(opcode, "BYTE") == 0)
-			locctr++;
+			locctr += strlen(operand) - 2;
 
-		fprintf(output, "%s\t%s\t%s\n", label, opcode, operand);
+		// fprintf(output, "%s\t%s\t%s\n", label, opcode, operand);
 		fscanf(input, "%s\t%s\t%s", label, opcode, operand);
 	}
 	fprintf(output, "%d\t%s\t%s\t%s\n", locctr, label, opcode, operand);
@@ -65,4 +104,5 @@ void main()
 	fclose(output);
 	fclose(opTable);
 	fclose(symTbl);
+	display();
 }
